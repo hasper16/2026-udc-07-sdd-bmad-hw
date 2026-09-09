@@ -36,8 +36,14 @@ export function priceOrder(order: Order, coupons: Coupon[]): PriceBreakdown {
     categoryTotals[item.category] = (categoryTotals[item.category] || 0) + (item.unitPriceKopecks * item.quantity);
   }
 
+  // Map requested coupons from the order in the order they were typed
+  const couponMap = new Map(coupons.map(c => [c.code, c]));
+  const requestedCoupons = order.coupons
+    .map(code => couponMap.get(code))
+    .filter((c): c is Coupon => c !== undefined);
+
   // Process valid coupons
-  const validCoupons = coupons.filter(c => {
+  const validCoupons = requestedCoupons.filter(c => {
     if (new Date(c.expiresAt).getTime() <= Date.now()) {
       return false; // AC-2: expired
     }

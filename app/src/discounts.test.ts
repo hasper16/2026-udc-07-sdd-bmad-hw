@@ -43,7 +43,7 @@ describe("priceOrder discounts", () => {
   });
 
   it("AC-2: Expired coupon is ignored", () => {
-    const o = order();
+    const o = order({ coupons: ["OLD"] });
     const c: Coupon = {
       code: "OLD",
       kind: "fixed",
@@ -57,7 +57,7 @@ describe("priceOrder discounts", () => {
   });
 
   it("AC-3: Two coupons are applied sequentially to remaining sum", () => {
-    const o = order();
+    const o = order({ coupons: ["10PCT", "50GRN"] });
     const c1: Coupon = { code: "10PCT", kind: "percent", value: 10, expiresAt: "2026-10-01T00:00:00Z" };
     const c2: Coupon = { code: "50GRN", kind: "fixed", value: 5_000, expiresAt: "2026-10-01T00:00:00Z" };
     
@@ -70,7 +70,7 @@ describe("priceOrder discounts", () => {
   });
 
   it("AC-4: Discount exceeds subtotal caps total at 0 + shipping", () => {
-    const o = order();
+    const o = order({ coupons: ["BIG"] });
     const c1: Coupon = { code: "BIG", kind: "fixed", value: 200_000, expiresAt: "2026-10-01T00:00:00Z" };
     
     const result = priceOrder(o, [c1]);
@@ -82,7 +82,7 @@ describe("priceOrder discounts", () => {
   });
 
   it("AC-5: Empty order results in 0", () => {
-    const o = order({ items: [] });
+    const o = order({ items: [], coupons: ["10PCT"] });
     const c1: Coupon = { code: "10PCT", kind: "percent", value: 10, expiresAt: "2026-10-01T00:00:00Z" };
     
     const result = priceOrder(o, [c1]);
@@ -104,7 +104,7 @@ describe("priceOrder discounts", () => {
   it("AC-7: minSubtotalKopecks applies to original subtotal", () => {
     // subtotal = 100000. Silver tier reduces to 95000.
     // Coupon requires 100000. It should still apply.
-    const o = order({ customerTier: "silver" });
+    const o = order({ customerTier: "silver", coupons: ["MIN100"] });
     const c: Coupon = { code: "MIN100", kind: "fixed", value: 10_000, expiresAt: "2026-10-01T00:00:00Z", minSubtotalKopecks: 100_000 };
     
     const result = priceOrder(o, [c]);
@@ -118,7 +118,8 @@ describe("priceOrder discounts", () => {
       items: [
         item({ unitPriceKopecks: 50_000, quantity: 1, category: "digital" }),
         item({ unitPriceKopecks: 50_000, quantity: 1, category: "standard" })
-      ] 
+      ],
+      coupons: ["GEN10", "DIG20"]
     });
     // First, a general fixed coupon of 1000 kopecks
     const c1: Coupon = { code: "GEN10", kind: "fixed", value: 1_000, expiresAt: "2026-10-01T00:00:00Z" };
@@ -128,5 +129,20 @@ describe("priceOrder discounts", () => {
     const result = priceOrder(o, [c1, c2]);
     
     expect(result.couponDiscountKopecks).toBe(11_000); // 1000 + 10000
+  });
+
+  it("AC-9: Category coupon fixed amount applies but is capped at category original subtotal", () => {
+    const o = order({ 
+      items: [
+        item({ unitPriceKopecks: 30_000, quantity: 1, category: "digital" })
+      ],
+      coupons: ["FIXED_CAT"]
+    });
+    // 50000 discount but category only has 30000. Should be capped at 30000.
+    const c: Coupon = { code: "FIXED_CAT", kind: "fixed", value: 50_000, expiresAt: "2026-10-01T00:00:00Z", category: "digital" };
+    
+    const result = priceOrder(o, [c]);
+    
+    expect(result.couponDiscountKopecks).toBe(30_000);
   });
 });

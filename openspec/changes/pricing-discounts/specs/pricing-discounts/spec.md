@@ -32,6 +32,10 @@ The system SHALL apply category-specific coupons only to the original value of i
 - **WHEN** a category coupon of 20% for "digital" is used, and a general fixed 1000 coupon, on an order with 50000 "digital" and 50000 "standard" for UA
 - **THEN** the category discount is calculated based on the 50000 original amount, resulting in 10000 discount, for a total coupon discount of 11000, and result: `{subtotalKopecks: 100000, tierDiscountKopecks: 0, couponDiscountKopecks: 11000, shippingKopecks: 4900, totalKopecks: 93900}`.
 
+#### Scenario: Category coupon fixed amount capped (AC-9)
+- **WHEN** a category coupon provides a fixed discount of 50000 kopecks for "digital", but the "digital" items original subtotal is only 30000 kopecks
+- **THEN** the discount is capped at the category's original subtotal of 30000 kopecks.
+
 ### Requirement: Negative total prevention
 The system SHALL ensure the subtotal never drops below 0 kopecks after discounts.
 
