@@ -1,3 +1,5 @@
+# Design
+
 ## Context
 
 The checkout system currently calculates subtotal and shipping but lacks a discount engine. We need to implement it in TypeScript without floating-point errors (amounts are in kopecks) according to `spec.md`.
@@ -31,4 +33,4 @@ Rationale: As defined in the spec.
 ## Risks / Trade-offs
 
 - **Risk:** Floating point precision during percentage division.
-  - **Mitigation:** Use `Math.round(amount * (percentage / 100))` for exact kopeck amount.
+  - **Mitigation:** Use `Math.round((amount * percentage) / 100)` for exact kopeck amount.

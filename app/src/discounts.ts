@@ -25,8 +25,7 @@ export function priceOrder(order: Order, coupons: Coupon[]): PriceBreakdown {
 
   // Tier discount
   const tierPct = tierPercent(order);
-  const tierDiscountRaw = subtotal * (tierPct / 100);
-  const tierDiscount = Math.round(tierDiscountRaw);
+  const tierDiscount = Math.round((subtotal * tierPct) / 100);
   
   let remainingSubtotal = subtotal - tierDiscount;
   let totalCouponDiscount = 0;
@@ -55,14 +54,14 @@ export function priceOrder(order: Order, coupons: Coupon[]): PriceBreakdown {
       const catTotal = categoryTotals[coupon.category] || 0;
       if (catTotal > 0) {
         if (coupon.kind === "percent") {
-          discountAmount = Math.round(catTotal * (coupon.value / 100));
+          discountAmount = Math.round((catTotal * coupon.value) / 100);
         } else {
           discountAmount = Math.min(coupon.value, catTotal);
         }
       }
     } else {
       if (coupon.kind === "percent") {
-        discountAmount = Math.round(remainingSubtotal * (coupon.value / 100));
+        discountAmount = Math.round((remainingSubtotal * coupon.value) / 100);
       } else {
         discountAmount = coupon.value;
       }

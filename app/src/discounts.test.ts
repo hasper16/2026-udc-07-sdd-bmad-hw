@@ -118,11 +118,13 @@ describe("priceOrder discounts", () => {
         item({ unitPriceKopecks: 50_000, quantity: 1, category: "standard" })
       ] 
     });
-    // 20% on digital -> 10000 kopecks
-    const c: Coupon = { code: "DIG20", kind: "percent", value: 20, expiresAt: "2026-10-01T00:00:00Z", category: "digital" };
+    // First, a general fixed coupon of 1000 kopecks
+    const c1: Coupon = { code: "GEN10", kind: "fixed", value: 1_000, expiresAt: "2026-10-01T00:00:00Z" };
+    // 20% on digital -> 10000 kopecks (based on 50k original, not 49k remaining)
+    const c2: Coupon = { code: "DIG20", kind: "percent", value: 20, expiresAt: "2026-10-01T00:00:00Z", category: "digital" };
     
-    const result = priceOrder(o, [c]);
+    const result = priceOrder(o, [c1, c2]);
     
-    expect(result.couponDiscountKopecks).toBe(10_000);
+    expect(result.couponDiscountKopecks).toBe(11_000); // 1000 + 10000
   });
 });
