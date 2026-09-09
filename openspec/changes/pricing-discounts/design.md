@@ -33,4 +33,4 @@ Rationale: As defined in the spec.
 ## Risks / Trade-offs
 
 - **Risk:** Floating point precision during percentage division.
-  - **Mitigation:** Use `Math.round((amount * percentage) / 100)` for exact kopeck amount.
+  - **Mitigation:** Use `Math.round((amount * percentage) / 100)` which is integer-safe for typical e-commerce amounts in kopecks (up to `Number.MAX_SAFE_INTEGER`, roughly 90 trillion kopecks).
