@@ -36,8 +36,8 @@ The system SHALL apply category-specific coupons only to the original value of i
 The system SHALL ensure the subtotal never drops below 0 kopecks after discounts.
 
 #### Scenario: Discount exceeds subtotal (AC-4)
-- **WHEN** order subtotal is 50000 and fixed coupon is 200000
-- **THEN** the total discount is capped at the subtotal, leaving 0 for items + shipping.
+- **WHEN** order subtotal is 100000 kopecks and fixed coupon is 200000 kopecks
+- **THEN** the total discount is capped at the subtotal, leaving 0 for items plus 4900 shipping, resulting in: `{subtotalKopecks: 100000, tierDiscountKopecks: 0, couponDiscountKopecks: 100000, shippingKopecks: 4900, totalKopecks: 4900}`
 
 #### Scenario: Empty order (AC-5)
 - **WHEN** the order contains no items

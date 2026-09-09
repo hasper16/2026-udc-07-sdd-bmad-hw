@@ -75,8 +75,10 @@ describe("priceOrder discounts", () => {
     
     const result = priceOrder(o, [c1]);
     
+    expect(result.subtotalKopecks).toBe(100_000);
     expect(result.couponDiscountKopecks).toBe(100_000);
-    expect(result.totalKopecks).toBe(0 + 4_900);
+    expect(result.shippingKopecks).toBe(4_900);
+    expect(result.totalKopecks).toBe(4_900);
   });
 
   it("AC-5: Empty order results in 0", () => {
